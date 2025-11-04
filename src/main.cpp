@@ -20,11 +20,11 @@
 #define LEFT1 13
 #define LEFT2 12
 #define LEFT3 11
-#define IMU_PORT 14 //SWITCH TO CORRECT PORT
+#define IMU_PORT 14
 #define H_ENCODER_PORT -16 
 #define V_ENCODER_PORT -17 
 
-#define TRACK_WIDTH 10.5 //SWITCH TO REAL VALUES
+#define TRACK_WIDTH 10.5
 #define HORIZONTAL_DRIFT 4
 #define H_TRACKING_OFFSET -3
 #define V_TRACKING_OFFSET 0
@@ -60,17 +60,17 @@ pros::Controller controller (pros::E_CONTROLLER_MASTER);
 lemlib::Drivetrain drivetrain(&left_mg,
                               &right_mg,
                               TRACK_WIDTH, 
-                              lemlib::Omniwheel::NEW_275, //CHECK LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                              lemlib::Omniwheel::NEW_275,
                               DRIVE_RPM, // drivetrain rpm is 450 (600 RPM Motor x 36T gear / 48T wheel)
                               HORIZONTAL_DRIFT
 );
 
 // odometry settings
-lemlib::OdomSensors sensors(&v_tracking_wheel, // vertical tracking wheel 1, set to null
-                            nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
-                            &h_tracking_wheel, // horizontal tracking wheel 1
-                            nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
-                            &imu // inertial sensor
+lemlib::OdomSensors sensors(&v_tracking_wheel,
+                            nullptr,
+                            &h_tracking_wheel,
+                            nullptr,
+                            &imu 
 );
 
 // lateral PID controller
