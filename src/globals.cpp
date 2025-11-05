@@ -86,6 +86,10 @@ namespace Robot {
                                         1.09 // expo curve gain
         );
 
+        lemlib::ExpoDriveCurve arcade_turn_curve(1,   // joystick deadband out of 127
+                                   8,  // minimum output where drivetrain will move out of 127
+                                   1.016 // expo curve gain
+);
 
         lemlib::Chassis chassis(drivetrain, 
                                 lateral_controller, 

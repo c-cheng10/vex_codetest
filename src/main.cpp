@@ -9,6 +9,10 @@
 #include "pros/rtos.hpp"
 #include <string>
 #include <cmath>
+#include "robot/descore.h"
+#include "robot/drivetrain.h"
+#include "robot/intake.h"
+#include "robot/matchloader.h"
 
 using namespace Robot;
 using namespace Robot::Globals;
@@ -35,12 +39,16 @@ void on_center_button(){
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+struct RobotSubsystems {
+   Robot::Drivetrain drivetrain;
+   Robot::Intake intake;
+   Robot::Descore descore;
+   Robot::Matchloader matchloader;
+} subsystem;
+
 void initialize(){
-    arms.set_value(true);
-	pros::lcd::initialize(); // initialize brain screen
-    chassis.calibrate(); // calibrate sensors
-    h_encoder.reset_position();
-    v_encoder.reset_position();
+	pros::lcd::initialize();
+    chassis.calibrate();
     chassis.setPose(0,0,0);
 }
 
@@ -88,7 +96,7 @@ void competition_initialize(){
 
 void autonomous() {
   
-    
+
 
 }
 
@@ -106,76 +114,14 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol(){
-    int intake_state = 0;
-	int score_state = 0;
-
-    bool arms_toggle = false;
-    bool matchloader_toggle = false;
-
-    int invert_bool = 1;
 
 	while(true){
         screen();
-        // drive control
-        int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-        int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-        chassis.arcade(invert_bool * leftY, invert_bool * rightX);
-		// intake control
-		if(controller.get_digital(DIGITAL_L1)){
-			intake_state = 1;
-		} else if(controller.get_digital(DIGITAL_L2)){
-			intake_state = -1;
-		} else {
-			intake_state = 0;
-		}
-
-        // --- Scoring control ---
-        if (controller.get_digital(DIGITAL_R1)) {
-            score_state = 1;
-            intake_state = 1;
-        } else if (controller.get_digital(DIGITAL_R2)) {
-            score_state = -1;
-            intake_state= 1;
-        } else{
-            score_state = 0;
-        }
-
-        // --- Intake motor control ---
-        if (intake_state == 1) {
-            intake.move_velocity(200);
-            container.move_velocity(-200);
-        } else if (intake_state == -1) {
-            intake.move_velocity(-200);
-            container.move_velocity(200);
-        } else {
-            intake.move_velocity(0);
-            container.move_velocity(0);
-        }
-
-        // --- Scoring motor control ---
-        if (score_state == 1) {
-            score.move_velocity(200);
-        } else if (score_state == -1) {
-            score.move_velocity(-200);
-        } else {
-            score.move_velocity(0);
-        }
-
-        // --- Pneumatics toggles ---
-        if (controller.get_digital_new_press(DIGITAL_A)) {
-            arms_toggle = !arms_toggle;
-            arms.set_value(arms_toggle);
-        }
-
-        if(controller.get_digital_new_press(DIGITAL_LEFT)){
-            matchloader_toggle = !matchloader_toggle;
-            matchloader.set_value(matchloader_toggle);
-        }
-
-        if(controller.get_digital_new_press(DIGITAL_RIGHT)){
-            invert_bool *= -1;
-        }
-
+        subsystem.drivetrain.run();
+        subsystem.intake.run();
+        subsystem.descore.run();
+        subsystem.matchloader.run();
+        
         pros::delay(20);
     }
 }
