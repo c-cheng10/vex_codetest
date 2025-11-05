@@ -1,121 +1,17 @@
-/*
-  #    ###    #    ###    ###   #### 
- ##   #   #  ##   #   #  #   #  #   #
-  #   #   #   #   #   #  #   #  #   #
-  #    ####   #   #   #   ####  #### 
-  #       #   #   #   #      #  #   #
-  #   #   #   #   #   #  #   #  #   #
- ###   ###   ###   ###    ###   #### 
-*/
-
 #include "main.h"
-#include "lemlib/api.hpp"
+#include "globals.h"
+#include "lemlib/chassis/chassis.hpp"
+#include "liblvgl/llemu.hpp"
+#include "pros/misc.h"
+#include "lemlib/timer.hpp"
+#include "pros/misc.hpp"
+#include "pros/motors.hpp"
+#include "pros/rtos.hpp"
+#include <string>
+#include <cmath>
 
-#define SCORE_PORT 10
-#define INTAKE_PORT 6
-#define CONTAINER_PORT 9
-#define RIGHT1 18
-#define RIGHT2 19
-#define RIGHT3 20
-#define LEFT1 13
-#define LEFT2 12
-#define LEFT3 11
-#define IMU_PORT 14
-#define H_ENCODER_PORT -16 
-#define V_ENCODER_PORT -17 
-
-#define TRACK_WIDTH 10.5
-#define HORIZONTAL_DRIFT 4
-#define H_TRACKING_OFFSET -3
-#define V_TRACKING_OFFSET 0
-
-
-const int DRIVE_RPM = 450;
-
-pros::Motor score(SCORE_PORT);
-pros::Motor intake(INTAKE_PORT);
-pros::Motor container(CONTAINER_PORT);
-pros::Motor right1(RIGHT1);
-pros::Motor right2(RIGHT2);
-pros::Motor right3(RIGHT3);
-pros::Motor left1(LEFT1);
-pros::Motor left2(LEFT2);
-pros::Motor left3(LEFT3);
-
-pros::adi::DigitalOut arms ('G');
-pros::adi::DigitalOut matchloader ('H');
-
-pros::MotorGroup left_mg({-LEFT1, -LEFT2, -LEFT3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
-pros::MotorGroup right_mg({RIGHT1, RIGHT2, RIGHT3});
-
-// imu
-pros::Imu imu(IMU_PORT);
-pros::Rotation h_encoder(H_ENCODER_PORT);
-pros::Rotation v_encoder(V_ENCODER_PORT);
-lemlib::TrackingWheel h_tracking_wheel(&h_encoder, lemlib::Omniwheel::NEW_2, H_TRACKING_OFFSET);
-lemlib::TrackingWheel v_tracking_wheel(&v_encoder, lemlib::Omniwheel::NEW_2, V_TRACKING_OFFSET);
-
-pros::Controller controller (pros::E_CONTROLLER_MASTER);
-
-lemlib::Drivetrain drivetrain(&left_mg,
-                              &right_mg,
-                              TRACK_WIDTH, 
-                              lemlib::Omniwheel::NEW_275,
-                              DRIVE_RPM, // drivetrain rpm is 450 (600 RPM Motor x 36T gear / 48T wheel)
-                              HORIZONTAL_DRIFT
-);
-
-// odometry settings
-lemlib::OdomSensors sensors(&v_tracking_wheel,
-                            nullptr,
-                            &h_tracking_wheel,
-                            nullptr,
-                            &imu 
-);
-
-// lateral PID controller
-lemlib::ControllerSettings lateral_controller(1.5, // proportional gain (kP)
-                                              0.001, // integral gain (kI)
-                                              25, // derivative gain (kD)
-                                              3, // anti windup
-                                              1, // small error range, in inches
-                                              100, // small error range timeout, in milliseconds
-                                              3, // large error range, in inches
-                                              500, // large error range timeout, in milliseconds
-                                              127 // maximum acceleration (slew)
-);
-
-// angular PID controller
-lemlib::ControllerSettings angular_controller(1.3, // proportional gain (kP)
-                                              0.005, // integral gain (kI)
-                                              2.75, // derivative gain (kD)
-                                              3, // anti windup
-                                              1, // small error range, in inches
-                                              100, // small error range timeout, in milliseconds
-                                              3, // large error range, in inches
-                                              500, // large error range timeout, in milliseconds
-                                              127 // maximum acceleration (slew)
-);
-
-lemlib::ExpoDriveCurve throttle_curve(3, // joystick deadband out of 127
-                                     10, // minimum output where drivetrain will move out of 127
-                                     1.04 // expo curve gain
-);
-
-// input curve for steer input during driver control
-lemlib::ExpoDriveCurve steer_curve(3, // joystick deadband out of 127
-                                  10, // minimum output where drivetrain will move out of 127
-                                  1.09 // expo curve gain
-);
-
-
-lemlib::Chassis chassis(drivetrain, 
-                        lateral_controller, 
-                        angular_controller, 
-                        sensors,
-                        &throttle_curve, 
-                        &steer_curve
-);
+using namespace Robot;
+using namespace Robot::Globals;
 
 /**
  * A callback function for LLEMU's center button.
@@ -191,42 +87,8 @@ void competition_initialize(){
  */
 
 void autonomous() {
-    // chassis.moveToPoint(0,15,2000, {.minSpeed = 100});
-    chassis.setPose(0,0,0);
-    intake.move_velocity(200);
-    chassis.moveToPoint(0, 12, 1000);
-    chassis.turnToHeading(10, 1000);
-    chassis.moveToPoint(-15,50, 2000, {.minSpeed = 100});
-    pros::delay(500);
-    intake.move_velocity(0);
-    chassis.turnToHeading(100, 1000);
-    chassis.moveToPoint(-48, 20, 2000, {.minSpeed = 100});
-    chassis.turnToHeading(180, 1000);
-    chassis.moveToPoint(-48, 50, 2000, {.forwards = false, .minSpeed = 100});
-    intake.move_velocity(200);
-    pros::delay(200);
-    intake.move_velocity(-200);
-    pros::delay(200);
-    intake.move_velocity(200);
-    pros::delay(200);
-    intake.move_velocity(-200);
-    pros::delay(200);
-    intake.move_velocity(200);
-    pros::delay(2500);
-    intake.move_velocity(0);
-
-    // chassis.moveToPoint(0,12,2000);
-    // chassis.moveToPoint(-12,12,2000);
-    // chassis.turnToHeading(0,1000);
-
-    // matchloader.set_value(true);
-    // intake.move_velocity(200);
-
-    // chassis.moveToPoint(-12,-12,4000);
+  
     
-    // chassis.moveToPoint(-12,24,4000);
-    // arms.set_value(false);
-    // intake.move_velocity(0);
 
 }
 

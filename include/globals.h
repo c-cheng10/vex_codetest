@@ -1,36 +1,51 @@
-#include "main.h"
-#include "lemlib/api.hpp"
+#pragma once
+
+#include "pros/abstract_motor.hpp"
+#include "pros/adi.hpp"
+#include "pros/misc.hpp"
+#include "pros/motors.hpp"
 #include "pros/optical.hpp"
-#include "pros/vision.hpp"
+#include "pros/vision.h"
+#include "lemlib/api.hpp"
 
 namespace Robot {
-
     namespace Globals {
 
-        pros::Controller controller (pros::E_CONTROLLER_MASTER);
+        extern pros::Controller controller;
 
-        pros::Motor right1(18, pros::v5::MotorGears::blue, pros::v5::MotorUnits::degrees);
-        pros::Motor right2(19, pros::v5::MotorGears::blue, pros::v5::MotorUnits::degrees);
-        pros::Motor right3(20, pros::v5::MotorGears::blue, pros::v5::MotorUnits::degrees);
-        pros::Motor left1(-13, pros::v5::MotorGears::blue, pros::v5::MotorUnits::degrees);
-        pros::Motor left2(-12, pros::v5::MotorGears::blue, pros::v5::MotorUnits::degrees);
-        pros::Motor left3(-11, pros::v5::MotorGears::blue, pros::v5::MotorUnits::degrees);
+        extern pros::Motor right1;
+        extern pros::Motor right2;
+        extern pros::Motor right3;
+        extern pros::Motor left1;
+        extern pros::Motor left2;
+        extern pros::Motor left3;
 
-        pros::Motor score(10, pros::v5::MotorGears::blue, pros::v5::MotorUnits::degrees);
-        pros::Motor intake(6, pros::v5::MotorGears::blue, pros::v5::MotorUnits::degrees);
-        pros::Motor container(9, pros::v5::MotorGears::blue, pros::v5::MotorUnits::degrees);
+        extern pros::Motor score;
+        extern pros::Motor intake;
+        extern pros::Motor container;
 
-        pros::adi::Pneumatics descore('G', false);
-        pros::adi::Pneumatics matchloader('H', false);
+        extern pros::adi::Pneumatics descore;
+        extern pros::adi::Pneumatics matchloader;
 
-        pros::Imu imu(IMU_PORT);
-        pros::Rotation h_encoder(H_ENCODER_PORT);
-        pros::Rotation v_encoder(V_ENCODER_PORT);
-        lemlib::TrackingWheel h_tracking_wheel(&h_encoder, lemlib::Omniwheel::NEW_2, -3);
-        lemlib::TrackingWheel v_tracking_wheel(&v_encoder, lemlib::Omniwheel::NEW_2, 0);
+        extern pros::Imu imu;
+        extern pros::Rotation h_encoder;
+        extern pros::Rotation v_encoder;
+        extern lemlib::TrackingWheel h_tracking_wheel;
+        extern lemlib::TrackingWheel v_tracking_wheel;
 
-        pros::MotorGroup left_mg({left1.get_port(), left2.get_port(), left3.get_port()});
-        pros::MotorGroup right_mg({RIGHT1, RIGHT2, RIGHT3});
+        extern pros::MotorGroup left_mg;
+        extern pros::MotorGroup right_mg;
+
+        extern lemlib::Drivetrain drivetrain;
+        extern lemlib::OdomSensors sensors;
+
+        extern lemlib::ControllerSettings lateral_controller;
+        extern lemlib::ControllerSettings angular_controller;
+
+        extern lemlib::ExpoDriveCurve throttle_curve;
+        extern lemlib::ExpoDriveCurve steer_curve;
+
+        extern lemlib::Chassis chassis;
 
     }
 }
