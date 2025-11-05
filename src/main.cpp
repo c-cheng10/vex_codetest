@@ -116,7 +116,9 @@ void autonomous() {
 void opcontrol(){
 
 	while(true){
+        
         screen();
+
         subsystem.drivetrain.run();
         subsystem.intake.run();
         subsystem.descore.run();
