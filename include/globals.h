@@ -44,6 +44,7 @@ namespace Robot {
 
         extern lemlib::ExpoDriveCurve throttle_curve;
         extern lemlib::ExpoDriveCurve steer_curve;
+        extern lemlib::ExpoDriveCurve arcade_turn_curve;
 
         extern lemlib::Chassis chassis;
 
