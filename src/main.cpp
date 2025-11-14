@@ -13,6 +13,7 @@
 #include "robot/drivetrain.h"
 #include "robot/intake.h"
 #include "robot/matchloader.h"
+#include "paths.cpp"
 
 using namespace Robot;
 using namespace Robot::Globals;
@@ -96,7 +97,7 @@ void competition_initialize(){
 
 void autonomous() {
   
-
+    auton::leftAWP;
 
 }
 
@@ -114,6 +115,8 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol(){
+
+    autonomous();
 
 	while(true){
         

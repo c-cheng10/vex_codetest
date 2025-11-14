@@ -1,7 +1,6 @@
 #include "robot/drivetrain.h"
 #include "globals.h"
 #include <cmath>
-#define DEFAULT_DELAY_LENGTH 20
 
 using namespace Robot;
 using namespace Robot::Globals;
@@ -22,7 +21,7 @@ void Drivetrain::ArcadeDrive() {
 
    chassis.arcade(thrustHandler(throttle), thrustHandler(turn), false, 0.55);
 
-   pros::delay(DEFAULT_DELAY_LENGTH);
+   pros::delay(0);
 }
 
 
